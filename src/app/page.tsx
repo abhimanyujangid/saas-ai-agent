@@ -1,8 +1,9 @@
+import { Button } from "@/components/ui/button";
+
 export default function Home() {
   return (
     <div className="home-page text-center">
-      <h1>Welcome to the Home Page</h1>
-      <p>This is the main content of the home page.</p>
+     <Button>Click Me</Button>
     </div>
   );
 }
