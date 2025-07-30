@@ -11,7 +11,6 @@ import { useState } from "react";
 // Auth Client Import
 import { authClient } from "@/lib/auth-client";
 
-
 // UI import
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -30,19 +29,19 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { OctagonAlertIcon } from "lucide-react";
 import { FaGithub, FaGoogle } from "react-icons/fa";
 
-const formSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(1, "Password is required"),
-  confirmPassword: z.string().min(1, "Confirm Password is required"),
-})
+const formSchema = z
+  .object({
+    name: z.string().min(1, "Name is required"),
+    email: z.string().email("Invalid email address"),
+    password: z.string().min(1, "Password is required"),
+    confirmPassword: z.string().min(1, "Confirm Password is required"),
+  })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
     path: ["confirmPassword"],
   });
 
 export const SignUpView = () => {
-
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState<boolean>(false);
@@ -56,29 +55,29 @@ export const SignUpView = () => {
       password: "",
       confirmPassword: "",
     },
-
   });
 
   // Form Submit Handler
   const onSubmit = (data: z.infer<typeof formSchema>) => {
     setError(null);
     setPending(true);
-    authClient.signUp.email(
-      {
-        name: data.name,
-        email: data.email,
-        password: data.password,
-      },
-      {
-        onSuccess: () => {
-          router.push("/");
+    authClient.signUp
+      .email(
+        {
+          name: data.name,
+          email: data.email,
+          password: data.password,
         },
-        onError: ({ error }) => {
-          setError(error.message || "An error occurred during sign in.");
+        {
+          onSuccess: () => {
+            router.push("/");
+          },
+          onError: ({ error }) => {
+            setError(error.message || "An error occurred during sign in.");
+          },
         }
-      }
-    )
-    .finally(() => {
+      )
+      .finally(() => {
         setPending(false);
       });
   };
@@ -88,7 +87,10 @@ export const SignUpView = () => {
       <Card className="overflow-hidden p-0">
         <CardContent className=" grid  p-0 md:grid-cols-2">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="p-6  md:p-8">
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="p-6  md:p-8"
+            >
               <div className="flex flex-col gap-6">
                 <div className="flex flex-col items-center text-center">
                   <h1 className="text-2xl font-semibold">Let's Get Start</h1>
@@ -173,17 +175,15 @@ export const SignUpView = () => {
                     )}
                   />
                 </div>
-                {
-                  !!error && (
-                    <Alert variant="destructive" className="bg-destructive/10">
-                      <OctagonAlertIcon className="h-4 w-4" />
-                      <AlertTitle>{error}</AlertTitle>
-                      {/* <AlertDescription>
+                {!!error && (
+                  <Alert variant="destructive" className="bg-destructive/10">
+                    <OctagonAlertIcon className="h-4 w-4" />
+                    <AlertTitle>{error}</AlertTitle>
+                    {/* <AlertDescription>
                         Please check your email and password.
                       </AlertDescription> */}
-                    </Alert>
-                  )
-                }
+                  </Alert>
+                )}
 
                 <Button className="w-full" type="submit" disabled={pending}>
                   Sign In
@@ -198,33 +198,55 @@ export const SignUpView = () => {
 
                 {/* Social Login Buttons */}
                 <div className="grid grid-cols-2 gap-4">
-                  <Button variant="outline" className="w-full" type="button" disabled={pending}
-                  onClick={() => {
-                    authClient.signIn.social({ provider: "google" })
-                  }}>
-                    <Link href="/auth/sign-in/google"><FaGoogle /></Link>
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    type="button"
+                    disabled={pending}
+                    onClick={() => {
+                      authClient.signIn.social({ provider: "google" });
+                    }}
+                  >
+                    <Link href="/auth/sign-in/google">
+                      <FaGoogle />
+                    </Link>
                   </Button>
-                  <Button variant="outline" className="w-full" type="button" disabled={pending} onClick={() => {
-                    authClient.signIn.social({ provider: "github" })
-                  }}>
-                    <Link href="/auth/sign-in/github"><FaGithub /></Link>
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    type="button"
+                    disabled={pending}
+                    onClick={() => {
+                      authClient.signIn.social({ provider: "github" });
+                    }}
+                  >
+                    <Link href="/auth/sign-in/github">
+                      <FaGithub />
+                    </Link>
                   </Button>
                 </div>
 
                 {/* change to Sign Up */}
                 <div className="text-center text-sm ">
-                  Already  have an account?{" "}
-                  <Link
-                    href="sign-in"
-                    className="underline underline-offset-4"
-                  >
+                  Already have an account?{" "}
+                  <Link href="sign-in" className="underline underline-offset-4">
                     Sign In
                   </Link>{" "}
                 </div>
               </div>
             </form>
           </Form>
-          <div className="bg-radial from-blue-600 to-blue-900 relative hidden md:flex flex-col gap-y-4 items-center justify-center ">
+          <div
+            className="relative hidden md:flex flex-col gap-y-4 items-center justify-center"
+            style={{
+              background: `radial-gradient(
+      oklch(0.525 0.147 24.9381),
+      oklch(0.465 0.147 24.9381),
+      oklch(0.405 0.147 24.9381)
+    )`,
+            }}
+          >
+            {" "}
             <Image
               src="/logo.svg"
               width={92}
@@ -238,7 +260,15 @@ export const SignUpView = () => {
       </Card>
 
       <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-shadow-black *:[a]:underline *:[a]:underline-offset-4">
-        By clicking continue, you agree to our{" "} <a href="#" className="underline">Terms of Service</a> and{" "}<a href="#" className="underline">Privacy Policy</a>.
+        By clicking continue, you agree to our{" "}
+        <a href="#" className="underline">
+          Terms of Service
+        </a>{" "}
+        and{" "}
+        <a href="#" className="underline">
+          Privacy Policy
+        </a>
+        .
       </div>
     </div>
   );
