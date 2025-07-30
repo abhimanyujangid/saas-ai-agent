@@ -3,7 +3,7 @@ import { botttsNeutral , initials } from "@dicebear/collection";
 
 // ui
 import { cn } from "@/lib/utils";
-import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 
 interface GeneratedAvatarProps {
@@ -32,8 +32,8 @@ export const GeneratedAvatar = ({
     }
 
     return (
-        <Avatar  className={cn(className)}>
-            <AvatarImage src={avatar.toDataUri()} alt="Generated Avatar" className="rounded-full" />
+        <Avatar className={cn(className)}>
+            <AvatarImage src={avatar.toDataUri()} alt="Generated Avatar" />
             <AvatarFallback>{seed.charAt(0).toUpperCase()}</AvatarFallback>
         </Avatar>
     );

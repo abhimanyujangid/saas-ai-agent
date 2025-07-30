@@ -9,8 +9,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
 import { GeneratedAvatar } from "@/components/ui/generated-avatar";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 // Icons import
 import { ChevronDownIcon, CreditCardIcon, LogOutIcon } from "lucide-react";
@@ -47,7 +47,7 @@ export const DashboardUserButton = () => {
            {
             data.user?.image ? (
               <Avatar >
-                <AvatarImage  src={data.user.image} alt="User Avatar" className="rounded-full w-10"/>
+                <AvatarImage  src={data.user.image} alt="User Avatar"/>
               </Avatar>
             ) : (
               <GeneratedAvatar seed={data.user?.name}  className="rounded-full w-10 h-10" variant="initials" />
