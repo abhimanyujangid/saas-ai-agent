@@ -8,6 +8,10 @@ import Link from "next/link";
 import  { useRouter } from "next/navigation";
 import { useState } from "react";
 
+// Auth Client Import 
+import { authClient } from "@/lib/auth-client";
+
+
 
 // UI import
 import { Input } from "@/components/ui/input";
@@ -25,7 +29,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 // Icon Import
 import { OctagonAlertIcon } from "lucide-react";
-import { authClient } from "@/lib/auth-client";
+import { FaGithub, FaGoogle } from "react-icons/fa";
 
 const formSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -148,11 +152,26 @@ export const SignInView = () => {
 
                 {/* Social Login Buttons */}
                 <div className="grid grid-cols-2 gap-4">
-                  <Button variant="outline" className="w-full" type="button" disabled={pending}>
-                    <Link href="/auth/sign-in/google">Google</Link>
+                  <Button 
+                  variant="outline" 
+                  className="w-full" 
+                  type="button" 
+                  disabled={pending}
+                   onClick={() => {
+                    authClient.signIn.social({ provider: "google" })
+                  }}>
+                    <Link href="/auth/sign-in/google"><FaGoogle /></Link>
                   </Button>
-                  <Button variant="outline" className="w-full" type="button" disabled={pending}>
-                    <Link href="/auth/sign-in/github">GitHub</Link>
+                  <Button 
+                  variant="outline" 
+                  className="w-full" 
+                  type="button" 
+                  disabled={pending}
+                  onClick={() => {
+                    authClient.signIn.social({ provider: "github" })
+                  }}
+                  >
+                    <Link href="/auth/sign-in/github"><FaGithub /></Link>
                   </Button>
                 </div>
 

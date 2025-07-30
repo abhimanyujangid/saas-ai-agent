@@ -5,8 +5,11 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
-import  { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+
+// Auth Client Import
+import { authClient } from "@/lib/auth-client";
 
 
 // UI import
@@ -25,7 +28,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 // Icon Import
 import { OctagonAlertIcon } from "lucide-react";
-import { authClient } from "@/lib/auth-client";
+import { FaGithub, FaGoogle } from "react-icons/fa";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -33,10 +36,10 @@ const formSchema = z.object({
   password: z.string().min(1, "Password is required"),
   confirmPassword: z.string().min(1, "Confirm Password is required"),
 })
-.refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
 export const SignUpView = () => {
 
@@ -57,7 +60,7 @@ export const SignUpView = () => {
   });
 
   // Form Submit Handler
-  const onSubmit =  (data: z.infer<typeof formSchema>) => {
+  const onSubmit = (data: z.infer<typeof formSchema>) => {
     setError(null);
     setPending(true);
     authClient.signUp.email(
@@ -70,14 +73,14 @@ export const SignUpView = () => {
         onSuccess: () => {
           router.push("/");
         },
-        onError: ({error}) => {
+        onError: ({ error }) => {
           setError(error.message || "An error occurred during sign in.");
         }
       }
     )
     .finally(() => {
-      setPending(false);
-    });
+        setPending(false);
+      });
   };
 
   return (
@@ -94,7 +97,7 @@ export const SignUpView = () => {
                     Create your account
                   </p>
                 </div>
-                 <div className="grid gap-3">
+                <div className="grid gap-3">
                   <FormField
                     control={form.control}
                     name="name"
@@ -195,11 +198,16 @@ export const SignUpView = () => {
 
                 {/* Social Login Buttons */}
                 <div className="grid grid-cols-2 gap-4">
-                  <Button variant="outline" className="w-full" type="button" disabled={pending}>
-                    <Link href="/auth/sign-in/google">Google</Link>
+                  <Button variant="outline" className="w-full" type="button" disabled={pending}
+                  onClick={() => {
+                    authClient.signIn.social({ provider: "google" })
+                  }}>
+                    <Link href="/auth/sign-in/google"><FaGoogle /></Link>
                   </Button>
-                  <Button variant="outline" className="w-full" type="button" disabled={pending}>
-                    <Link href="/auth/sign-in/github">GitHub</Link>
+                  <Button variant="outline" className="w-full" type="button" disabled={pending} onClick={() => {
+                    authClient.signIn.social({ provider: "github" })
+                  }}>
+                    <Link href="/auth/sign-in/github"><FaGithub /></Link>
                   </Button>
                 </div>
 
