@@ -16,7 +16,7 @@ export const DashboardNavbar = () => {
 
     useEffect(() => {
         const down = (e: KeyboardEvent) => {
-            if (e.metaKey && e.key === "k") {
+           if ((e.metaKey || e.ctrlKey) && e.key === "k") {
                 e.preventDefault();
                 setCommandOpen((prev) => !prev);
             }
@@ -26,7 +26,7 @@ export const DashboardNavbar = () => {
         return () => {
             document.removeEventListener("keydown", down);
         }; 
-    }, [isMobile]);
+    }, []);
 
 
     return (
