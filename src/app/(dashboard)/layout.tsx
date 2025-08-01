@@ -4,6 +4,7 @@ import { DashboardNavbar } from "@/modules/dashboard/ui/components/dashboard-nav
 import { DashboardSidebar } from "@/modules/dashboard/ui/components/dashboard-sidebar";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
+  
   return (
     <SidebarProvider>
         <DashboardSidebar />
