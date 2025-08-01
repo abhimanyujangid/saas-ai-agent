@@ -1,7 +1,7 @@
 import { authClient } from "@/lib/auth-client";
 
 // UI Component
-import { GeneratedAvatar } from "@/components/ui/generated-avatar";
+import { GeneratedAvatar } from "@/components/generated-avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,

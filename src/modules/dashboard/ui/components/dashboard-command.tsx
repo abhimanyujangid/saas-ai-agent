@@ -1,5 +1,5 @@
 //  UI Component
-import { CommandDialog, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
+import { CommandResponsiveDialog, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 
 interface Props {
     open?: boolean;
@@ -8,7 +8,7 @@ interface Props {
 
 export const DashboardCommand = ({ open, setOpen }: Props) => {
     return (
-        <CommandDialog open={open} onOpenChange={setOpen}>
+        <CommandResponsiveDialog open={open} onOpenChange={setOpen}>
             <CommandInput 
             placeholder="Find a meeting or Agent..."
             />
@@ -17,6 +17,6 @@ export const DashboardCommand = ({ open, setOpen }: Props) => {
                 <CommandItem>Meeting 2</CommandItem>
                 <CommandItem>Meeting 3</CommandItem>
             </CommandList>
-        </CommandDialog>
+        </CommandResponsiveDialog>
     );
 };

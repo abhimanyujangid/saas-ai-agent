@@ -22,10 +22,10 @@ const ErrorState = ({
                 </div>
                 <div className="flex flex-col items-center justify-center text-center gap-y-2">
                     <h6 className="text-xl font-semibold text-primary">
-                        {title || "Loading..."}
+                        {title || "An error occurred"}
                     </h6>
                     <p className="text-muted-foreground max-w-xs">
-                        {description || "Please wait while we load the data."}
+                        {description || "An error occurred while loading the agents. Please try again later."}
                     </p>
                 </div>
             </div>
