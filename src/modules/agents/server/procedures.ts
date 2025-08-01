@@ -13,12 +13,12 @@ import {
 
 
 
-import { agentSchema } from "../schemas";
+import { agentInsertSchema } from "../schemas";
 
 export const agentsRouter = createTRPCRouter({
     // Todo : change this 'getMMany' to use ' proctedeProcedure' instead of 'baseProcedure'
 
-    getone: baseProcedure
+    getOne: protectedProcedure
     .input(z.object({ id: z.string() })).query(async({ input })=>{
         const [existingAgent] = await db.select()
         .from(agents)
@@ -40,7 +40,7 @@ export const agentsRouter = createTRPCRouter({
     ),
 
     create: protectedProcedure
-    .input(agentSchema)
+    .input(agentInsertSchema)
     .mutation(async ({ input, ctx }) => {
         // const { name , instructions } = input;
         // const { auth } = ctx;
