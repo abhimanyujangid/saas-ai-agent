@@ -4,7 +4,7 @@ import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useTRPC } from "@/trpc/client";
 import LoadingState from "./loading-state";
 import ErrorState from "./error-state";
-import { ResponsiveDialog } from "@/components/responsive-diloag";
+import { ResponsiveDialog } from "@/components/responsive-dialog";
 import { Button } from "@/components/ui/button";
 
 
