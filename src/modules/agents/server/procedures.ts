@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import z from "zod";
-import { eq } from "drizzle-orm";
+import { eq, getTableColumns, sql } from "drizzle-orm";
 
 
 
@@ -20,7 +20,13 @@ export const agentsRouter = createTRPCRouter({
 
     getOne: protectedProcedure
     .input(z.object({ id: z.string() })).query(async({ input })=>{
-        const [existingAgent] = await db.select()
+        const [existingAgent] = await db
+        .select({
+            ...getTableColumns(agents),
+
+            // Add any additional fields you want to select
+          meetingCount: sql<number>`5`,
+        })
         .from(agents)
         .where(eq(agents.id, input.id))
 
