@@ -9,11 +9,63 @@ import {
   protectedProcedure,
 } from "@/trpc/init";
 
-import { agentInsertSchema } from "../schemas";
+import { agentInsertSchema, agentUpdateSchema } from "../schemas";
 import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE, MIN_PAGE_SIZE } from "@/constants/constants";
 import { TRPCError } from "@trpc/server";
 
 export const agentsRouter = createTRPCRouter({
+
+  update: protectedProcedure
+    .input(agentUpdateSchema)
+    .mutation(async ({ input, ctx }) => {
+      const { id, name, instructions } = input;
+
+      const [updatedAgent] = await db
+        .update(agents)
+        .set({
+          name,
+          instruction: instructions,
+        })
+        .where(
+          and(
+            eq(agents.id, id),
+            eq(agents.userId, ctx.auth.user.id),
+          )
+        )
+        .returning();
+
+      if (!updatedAgent) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: `Agent with id ${id} not found`,
+        });
+      }
+
+      return updatedAgent;
+    }),
+
+  remove: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const  [ removeAgent ] = await db
+        .delete(agents)
+        .where(
+          and(
+            eq(agents.id, input.id),
+            eq(agents.userId, ctx.auth.user.id),
+          )
+        )
+        .returning();
+
+        if (!removeAgent) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: `Agent with id ${input.id} not found`,
+          });
+        }
+
+        return removeAgent;
+    }),
  
   getOne: protectedProcedure
     .input(z.object({ id: z.string() }))
