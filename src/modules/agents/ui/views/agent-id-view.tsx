@@ -16,6 +16,8 @@ import { useTRPC } from "@/trpc/client";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useConfirm } from "@/hooks/use-confirm";
+import { useState } from "react";
+import { UpdateAgentDialog } from "../components/update-agent-dialog";
 
 
 interface Props {
@@ -26,7 +28,8 @@ const AgentIdView = ({ agentId }: Props) => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const trpc = useTRPC();
-
+  const [ updateAgentDialogOpen , setUpdateAgentDialogOpen ] = useState(false);
+  
   const { data } = useSuspenseQuery(
     trpc.agents.getOne.queryOptions({ id: agentId })
   );
@@ -57,11 +60,16 @@ const AgentIdView = ({ agentId }: Props) => {
   return (
     <>
     <RemoveConfirmation />
+    <UpdateAgentDialog
+      open={updateAgentDialogOpen}
+      openChange={setUpdateAgentDialogOpen}
+      initialValues={data}
+    />
     <div className="flex-1 py-4 px-4 md:px-8 flex flex-col gap-y-4">
       <AgentIdViewHeader
         agentId={agentId}
         agentName={data?.name}
-        onEdit={() => {}} // Placeholder for edit function
+        onEdit={() => setUpdateAgentDialogOpen(true)} 
         onRemove={handleRemoveAgent} // Call remove mutation
       />
       <div className="bg-white rounded-lg border">

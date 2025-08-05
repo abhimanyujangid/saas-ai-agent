@@ -70,20 +70,37 @@ export const AgentForm = ({
     })
   );
 
+  const updateAgent = useMutation(
+    trpc.agents.update.mutationOptions({
+      onSuccess: async (data) => {
+        await queryClient.invalidateQueries(
+          trpc.agents.getMany.queryOptions({}),
+        );
+
+        // Invalidate for free tire usage
+        onSuccess?.(data);
+      },
+      onError: (error) => {
+       toast.error(error.message)
+        // Todo : check if error code is 'Forbidden' and redirect to upgrade page
+      },
+    })
+  );
+
   const form = useForm<z.infer<typeof agentInsertSchema>>({
     resolver: zodResolver(agentInsertSchema),
     defaultValues: {
       name: initialValues?.name ?? "",
-      instructions: initialValues?.instructions ?? "",
+      instructions: initialValues?.instruction ?? "",
     },
   });
 
-  const isPending = createAgent.isPending;
+  const isPending = createAgent.isPending || updateAgent.isPending;
 
   const onSubmit = (value: z.infer<typeof agentInsertSchema>) => {
     if (isEdit) {
       // TODO: Add update mutation here
-      console.log("Update logic not implemented yet");
+      updateAgent.mutate({ id: initialValues!.id, ...value });
     } else {
       createAgent.mutate(value);
     }
