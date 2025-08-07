@@ -196,7 +196,7 @@ export const MeetingForm = ({
 
         <div className="flex justify-between  gap-4">
           <Button type="submit" disabled={isPending}>
-            {isEdit ? "Update Agent" : "Create Agent"}
+            {isEdit ? "Update Meeting" : "Create Meeting"}
           </Button>
           {onCancel && (
             <Button type="button" variant="outline" onClick={onCancel}>
