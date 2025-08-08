@@ -5,7 +5,7 @@ import { ErrorBoundary } from "react-error-boundary";
 
 
 // UI
-import { MeetingsViewError, MeetingsViewLoading, MeetingView } from "@/modules/meetings/server/ui/views/meetings-view";
+import { MeetingsViewError, MeetingsViewLoading, MeetingView } from "@/modules/meetings/ui/views/meetings-view";
 
 
 const Page = async () => {
