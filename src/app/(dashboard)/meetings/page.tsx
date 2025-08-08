@@ -3,27 +3,47 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 
-
 // UI
+<<<<<<< HEAD
 import { MeetingsViewError, MeetingsViewLoading, MeetingView } from "@/modules/meetings/ui/views/meetings-view";
 
+=======
+import {
+  MeetingsViewError,
+  MeetingsViewLoading,
+  MeetingView,
+} from "@/modules/meetings/ui/views/meetings-view";
+import { MeetingsListHeader } from "@/modules/meetings/ui/components/meetings-list-header";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
+>>>>>>> main
 
 const Page = async () => {
-  const queryClient = getQueryClient();
-  await queryClient.prefetchQuery(
-    trpc.meetings.getMany.queryOptions({}),
-  );
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
+  if (!session) {
+    redirect("/sign-in");
+  }
+
+  const queryClient = getQueryClient();
+  await queryClient.prefetchQuery(trpc.meetings.getMany.queryOptions({}));
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense fallback={<MeetingsViewLoading />}>
-        <ErrorBoundary fallback={<MeetingsViewError />}>
-          <MeetingView />
-        </ErrorBoundary>
-      </Suspense>
-    </HydrationBoundary>
+    <>
+      <MeetingsListHeader />
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <Suspense fallback={<MeetingsViewLoading />}>
+          <ErrorBoundary fallback={<MeetingsViewError />}>
+            <MeetingView />
+          </ErrorBoundary>
+        </Suspense>
+      </HydrationBoundary>
+    </>
   );
 };
 
 export default Page;
+ 
