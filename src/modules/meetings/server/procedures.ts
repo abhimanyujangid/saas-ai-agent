@@ -1,10 +1,6 @@
 import { db } from "@/db";
 import z from "zod";
-<<<<<<< HEAD
 import { and, count, desc, eq, getTableColumns, ilike , sql} from "drizzle-orm";
-=======
-import { and, count, desc, eq, getTableColumns, ilike } from "drizzle-orm";
->>>>>>> main
 
 import { agents, meetings } from "@/db/schema";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
