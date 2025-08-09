@@ -36,7 +36,7 @@ import { useState } from "react";
 interface MeetingFormProps {
   onSuccess?: (id: string) => void;
   onCancel?: () => void;
-  initialValues?: MeetingGetOne;
+  initialValues?: MeetingGetOne | null;
 }
 
 export const MeetingForm = ({

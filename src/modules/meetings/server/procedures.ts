@@ -24,7 +24,7 @@ export const meetingsRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       const [existingMeeting] = await db
         .select({
-          ...getTableColumns(agents),
+          ...getTableColumns(meetings),
         })
         .from(meetings)
         .where(
