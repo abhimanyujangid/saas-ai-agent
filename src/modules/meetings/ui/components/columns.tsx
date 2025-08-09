@@ -16,7 +16,6 @@ import { cn } from "@/lib/utils";
 // Icons
 import {
   CornerDownRightIcon,
-  VideoIcon,
   CircleCheckIcon,
   CircleXIcon,
   ClockArrowUpIcon,

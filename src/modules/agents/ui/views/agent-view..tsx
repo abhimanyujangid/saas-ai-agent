@@ -8,7 +8,7 @@ import ErrorState from "../../../../components/error-state";
 import { columns } from "../components/columns";
 import EmptyState from "../components/empty-state";
 import { useAgentFilters } from "../../hook/use-agent-filters";
-import { DataPagination } from "../components/dataPagination";
+import { DataPagination } from "@/components/dataPagination";
 import { useRouter } from "next/navigation";
 import { DataTable } from "@/components/data-table";
 

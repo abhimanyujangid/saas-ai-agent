@@ -15,6 +15,8 @@ import { TRPCError } from "@trpc/server";
 
 // Schemas
 import { meetingInsertSchema, meetingUpdateSchema } from "../schemas";
+import { MeetingStatus } from "../types";
+import { stat } from "fs";
 
 export const meetingsRouter = createTRPCRouter({
   getOne: protectedProcedure
@@ -22,7 +24,7 @@ export const meetingsRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       const [existingMeeting] = await db
         .select({
-          ...getTableColumns(agents),
+          ...getTableColumns(meetings),
         })
         .from(meetings)
         .where(
@@ -50,10 +52,18 @@ export const meetingsRouter = createTRPCRouter({
           .max(MAX_PAGE_SIZE)
           .default(DEFAULT_PAGE_SIZE),
         search: z.string().optional().nullish(),
+        agentId: z.string().nullish(), 
+        status: z.enum([
+          MeetingStatus.COMPLETED,
+          MeetingStatus.PROCESSING,
+          MeetingStatus.UPCOMING,
+          MeetingStatus.ACTIVE,
+          MeetingStatus.CANCELLED,
+        ]).optional().nullish()
       })
     )
-    .query(async ({ ctx, input }) => {
-      const { page, pageSize, search } = input;
+    .query(async ({ ctx, input,  }) => {
+      const { page, pageSize, search, agentId, status  } = input;
       const data = await db
         .select({
           ...getTableColumns(meetings),
@@ -66,7 +76,9 @@ export const meetingsRouter = createTRPCRouter({
         .where(
           and(
             eq(meetings.userId, ctx.auth.user.id),
-            search ? ilike(meetings.name, `%${search}%`) : undefined
+            search ? ilike(meetings.name, `%${search}%`) : undefined,
+            status ? eq(meetings.status, status) : undefined,
+            agentId && agentId.trim() !== '' ? eq(meetings.agentId, agentId) : undefined
           )
         )
         .orderBy(desc(meetings.createdAt), desc(meetings.id))
@@ -80,7 +92,9 @@ export const meetingsRouter = createTRPCRouter({
         .where(
           and(
             eq(meetings.userId, ctx.auth.user.id),
-            search ? ilike(meetings.name, `%${search}%`) : undefined
+            search ? ilike(meetings.name, `%${search}%`) : undefined,
+              status ? eq(meetings.status, status) : undefined,
+            agentId && agentId.trim() !== '' ? eq(meetings.agentId, agentId) : undefined
           )
         );
 
