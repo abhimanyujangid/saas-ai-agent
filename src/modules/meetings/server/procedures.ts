@@ -78,7 +78,7 @@ export const meetingsRouter = createTRPCRouter({
             eq(meetings.userId, ctx.auth.user.id),
             search ? ilike(meetings.name, `%${search}%`) : undefined,
             status ? eq(meetings.status, status) : undefined,
-            agentId ? eq(meetings.agentId, agentId) : undefined
+            agentId && agentId.trim() !== '' ? eq(meetings.agentId, agentId) : undefined
           )
         )
         .orderBy(desc(meetings.createdAt), desc(meetings.id))
@@ -94,7 +94,7 @@ export const meetingsRouter = createTRPCRouter({
             eq(meetings.userId, ctx.auth.user.id),
             search ? ilike(meetings.name, `%${search}%`) : undefined,
               status ? eq(meetings.status, status) : undefined,
-            agentId ? eq(meetings.agentId, agentId) : undefined
+            agentId && agentId.trim() !== '' ? eq(meetings.agentId, agentId) : undefined
           )
         );
 

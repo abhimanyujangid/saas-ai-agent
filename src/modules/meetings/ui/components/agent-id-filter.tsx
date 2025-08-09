@@ -22,10 +22,19 @@ export const AgentIdFilter = () => {
         }),
     );
 
+    const handleSelect = (value: string) => {
+        // If the same value is selected again, clear the filter
+        if (filter.agentId === value) {
+            setFilter({ agentId: "" });
+        } else {
+            setFilter({ agentId: value });
+        }
+    };
+
     return (
         <CommandSelect
             value={filter.agentId ?? ""}
-            onSelect={(value) => setFilter({ agentId: value })}
+            onSelect={handleSelect}
             onSearch={setAgentSearch}
             option={data?.items.map((agent) => ({
                 id: agent.id,
