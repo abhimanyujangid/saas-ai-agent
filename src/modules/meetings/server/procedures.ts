@@ -59,7 +59,7 @@ export const meetingsRouter = createTRPCRouter({
           MeetingStatus.UPCOMING,
           MeetingStatus.ACTIVE,
           MeetingStatus.CANCELLED,
-        ])
+        ]).optional().nullish()
       })
     )
     .query(async ({ ctx, input,  }) => {
