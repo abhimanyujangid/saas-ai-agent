@@ -56,6 +56,12 @@ export const MeetingIdView =  ({ meetingId }: Props) => {
     await removeMeeting.mutateAsync({ id: meetingId });
   };
 
+  const isActive = data.status === "active";
+  const isUpcoming = data.status === "upcoming";
+  const isCancelled = data.status === "cancelled";
+  const isCompleted = data.status === "completed";
+  const isProcessing = data.status === "processing";
+
   return (
     <>
       <RemoveConfirmation />
@@ -71,7 +77,10 @@ export const MeetingIdView =  ({ meetingId }: Props) => {
           onEdit={() => setUpdateMeetingDialogOpen(true) }
           onRemove={handleRemove}
         />
-        {JSON.stringify(data, null, 2)}
+       {isCancelled && <div>Meeting has been cancelled</div>}
+       {isCompleted && <div>Meeting has been completed</div>}
+       {isProcessing && <div>Meeting is currently being processed</div>}
+       {isUpcoming && <div>Meeting is scheduled for</div>}
       </div>
     </>
   );
