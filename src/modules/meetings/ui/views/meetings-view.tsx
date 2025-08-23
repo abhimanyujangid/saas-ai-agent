@@ -11,7 +11,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 
 // Types
 import { columns } from "../components/columns";
-import EmptyState from "@/modules/agents/ui/components/empty-state";
+import EmptyState from "@/components/empty-state";
 import { DataPagination } from "@/components/dataPagination";
 import { useMeetingFilters } from "../../hook/use-meetingd-filters";
 import { useRouter } from "next/navigation";

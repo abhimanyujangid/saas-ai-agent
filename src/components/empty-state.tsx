@@ -1,6 +1,4 @@
-import { AlertCircleIcon, PlusCircleIcon } from "lucide-react";
 import Image from "next/image";
-import { Button } from "@/components/ui/button"; // Assuming you have a Button component
 
 interface Props {
     title?: string;
@@ -10,11 +8,13 @@ interface Props {
     customIcon?: React.ReactNode;
     actionLabel?: string;
     onAction?: () => void;
+    imageSrc?: string;
 }
 
 const EmptyState = ({ 
     title, 
-    description
+    description,
+    imageSrc = '/empty.svg'
 }: Props) => {
     return (
         <div className="flex flex-col items-center justify-center gap-y-8 
@@ -22,7 +22,7 @@ const EmptyState = ({
             <div className="relative">
                 <div className="absolute -inset-1 bg-muted rounded-full opacity-50" />
                 <Image
-                    src="/empty.svg"
+                    src={imageSrc}
                     alt="Empty State"
                     width={160}
                     height={160}
