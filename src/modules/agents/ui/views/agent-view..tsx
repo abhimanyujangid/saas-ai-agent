@@ -6,7 +6,7 @@ import LoadingState from "../../../../components/loading-state";
 import ErrorState from "../../../../components/error-state";
 
 import { columns } from "../components/columns";
-import EmptyState from "../components/empty-state";
+import EmptyState from "../../../../components/empty-state";
 import { useAgentFilters } from "../../hook/use-agent-filters";
 import { DataPagination } from "@/components/dataPagination";
 import { useRouter } from "next/navigation";
