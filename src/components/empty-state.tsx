@@ -18,7 +18,7 @@ const EmptyState = ({
 }: Props) => {
     return (
         <div className="flex flex-col items-center justify-center gap-y-8 
-            bg-background rounded-xl p-8 shadow-lg border border-border/10">
+            bg-background rounded-xl p-8">
             <div className="relative">
                 <div className="absolute -inset-1 bg-muted rounded-full opacity-50" />
                 <Image
