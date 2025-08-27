@@ -3,7 +3,9 @@ import {
   StreamTheme
 } from "@stream-io/video-react-sdk";
 import { useState } from "react";
-
+import { CallLobby } from "./call-lobby";
+import { CallActive } from "./call-active";
+import "@stream-io/video-react-sdk/dist/css/styles.css";
 interface Props {
     meetingName: string;
 }
@@ -15,8 +17,13 @@ const CallUI = ({ meetingName }: Props) => {
 
     const handleJoin = async () => {
         if (!call) return;
-        await call.join();
-        setShow("call");
+        try {
+            await call.join();
+            setShow("call");
+        } catch (error) {
+            // Optionally, show a user notification here
+            console.error("Failed to join call:", error);
+        }
     };
 
     const handleLeave = async () => {
@@ -25,13 +32,11 @@ const CallUI = ({ meetingName }: Props) => {
         setShow("ended");
     };
 
-
-
     return (
         <StreamTheme className="h-screen">
-            {show === "call" && <p>call</p>}
+            {show === "call" && <CallActive onLeave={handleLeave} meetingName={meetingName} />}
             {show === "ended" && <p>ended</p>}
-            {show === "lobby" && <p>lobby</p>}
+            {show === "lobby" && <CallLobby onJoin={handleJoin} />}
         </StreamTheme>
     );
 };

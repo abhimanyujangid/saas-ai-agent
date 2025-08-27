@@ -12,7 +12,6 @@ import { LoaderIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTRPC } from "@/trpc/client";
 import { useMutation } from "@tanstack/react-query";
-import { set } from "zod";
 import CallUI from "./call-ui";
 
 interface Props {
