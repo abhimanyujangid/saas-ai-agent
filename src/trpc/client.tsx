@@ -44,6 +44,18 @@ export function TRPCReactProvider(
         httpBatchLink({
           // transformer: superjson, <-- if you use a data transformer
           url: getUrl(),
+          headers() {
+            return {
+              // Include cookies for authentication
+              // This ensures that authentication cookies are sent with requests
+            };
+          },
+          fetch(url, options) {
+            return fetch(url, {
+              ...options,
+              credentials: 'include', // Include cookies in requests
+            } as RequestInit);
+          },
         }),
       ],
     }),
