@@ -20,12 +20,6 @@ function verifySignatureWithSDK(body: string, signature: string): boolean {
 }
 
 export async function POST(req: NextRequest) {
-    // Validate required environment variables
-    if (!process.env.OPENAI_API_KEY) {
-        console.error('OPENAI_API_KEY is not set');
-        return NextResponse.json({ error: "Server configuration error" }, { status: 500 });
-    }
-
     const signature = req.headers.get("x-signature") || "";
     const apiKey = req.headers.get("x-api-key") || "";
 
@@ -49,51 +43,58 @@ export async function POST(req: NextRequest) {
 
     const eventType = (payload as Record<string, unknown>)?.type;
 
-    console.log(`Received webhook event: ${eventType}`);
-
     if (eventType === "call.session_started") {
-        try {
-            const event  = payload as CallSessionStartedEvent;
-            const meetingId = event.call.custom?.meetingid;
+        const event  = payload as CallSessionStartedEvent;
+        const meetingId = event.call.custom?.meetingId;
 
-            if(!meetingId){
-                return NextResponse.json({ error: "Missing meeting ID" }, { status: 400 });
-            }
+        if(!meetingId){
+            return NextResponse.json({ error: "Missing meeting ID" }, { status: 400 });
+        }
 
-            const [existingMeeting] = await db
-                .select()
-                .from(meetings)
-                .where(
-                    and(
-                        eq(meetings.id, meetingId),
-                        eq(meetings.status, 'upcoming')
-                    )
-                );
+        const [existingMeeting] = await db
+            .select()
+            .from(meetings)
+            .where(
+                and(
+                    eq(meetings.id, meetingId),
+                    not(eq(meetings.status, 'completed')),
+                    not(eq(meetings.status, 'active')),
+                    not(eq(meetings.status, 'cancelled')),
+                    not(eq(meetings.status, 'processing'))
+                )
+            );
 
-            if (!existingMeeting) {
-                return NextResponse.json({ error: "Meeting not found or not in upcoming status" }, { status: 404 });
-            }
 
-            await db
-            .update(meetings)
-            .set({
-                status: 'active',
-                startedAt: new Date()
-            })
-            .where(eq(meetings.id, existingMeeting.id));
+        if (!existingMeeting) {
+            return NextResponse.json({ error: "Meeting not found" }, { status: 404 });
+        }
 
-            const [existingAgent] = await db
-                .select()
-                .from(agents)
-                .where(eq(agents.id, existingMeeting.agentId));
+        await db
+        .update(meetings)
+        .set({
+            status: 'active',
+            startedAt: new Date()
+        })
+        .where(eq(meetings.id, existingMeeting.id));
 
-            if (!existingAgent) {
-                return NextResponse.json({ error: "Agent not found" }, { status: 404 });
-            }
+        const [existingAgent] = await db
+            .select()
+            .from(agents)
+            .where(eq(agents.id, existingMeeting.agentId));
 
-            const call = streamVideo.video.call('default', meetingId);
+        if (!existingAgent) {
+            return NextResponse.json({ error: "Agent not found" }, { status: 404 });
+        }
 
-            const realtimeClient = await streamVideo.video.connectOpenAi({
+        const call = streamVideo.video.call('default', meetingId);
+        
+        // Validate OpenAI API Key
+        if (!process.env.OPENAI_API_KEY) {
+            console.error('OPENAI_API_KEY is not set');
+            return NextResponse.json({ error: "OpenAI API key not configured" }, { status: 500 });
+        }
+
+        const  realtimeClient = await streamVideo.video.connectOpenAi({
                 call,
                 openAiApiKey: process.env.OPENAI_API_KEY!,
                 agentUserId: existingAgent.id
@@ -102,102 +103,17 @@ export async function POST(req: NextRequest) {
             realtimeClient.updateSession({
                 instructions: existingAgent.instruction
             });
+    }else if(eventType === 'call.session_participant_left') {
+        const event = payload as CallSessionParticipantLeftEvent;
+        const meetingId = event.call_cid.split(':')[1];
 
-        } catch (error) {
-            console.error('Error handling call.session_started:', error);
-            return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+
+        if(!meetingId){
+            return NextResponse.json({ error: "Missing meeting ID" }, { status: 400 });
         }
-    } else if(eventType === 'call.session_participant_left') {
-        try {
-            const event = payload as CallSessionParticipantLeftEvent;
-            const meetingId = event.call_cid.split(':')[1];
 
-            if(!meetingId){
-                return NextResponse.json({ error: "Missing meeting ID" }, { status: 400 });
-            }
-
-            // Update meeting status to completed
-            await db
-                .update(meetings)
-                .set({
-                    status: 'completed',
-                    endedAt: new Date()
-                })
-                .where(eq(meetings.id, meetingId));
-
-            const call = streamVideo.video.call('default', meetingId);
-            await call.end();
-
-        } catch (error) {
-            console.error('Error handling call.session_participant_left:', error);
-            return NextResponse.json({ error: "Internal server error" }, { status: 500 });
-        }
-    } else if (eventType === 'call.ended') {
-        try {
-            const event = payload as CallEndedEvent;
-            const meetingId = event.call.id;
-
-            if (!meetingId) {
-                return NextResponse.json({ error: "Missing meeting ID" }, { status: 400 });
-            }
-
-            await db
-                .update(meetings)
-                .set({
-                    status: 'completed',
-                    endedAt: new Date()
-                })
-                .where(eq(meetings.id, meetingId));
-
-        } catch (error) {
-            console.error('Error handling call.ended:', error);
-            return NextResponse.json({ error: "Internal server error" }, { status: 500 });
-        }
-    } else if (eventType === 'call.transcription_ready') {
-        try {
-            const event = payload as CallTranscriptionReadyEvent;
-            // Note: You may need to adjust these property accesses based on the actual event structure
-            const meetingId = (event as any).call_cid?.split(':')[1];
-            const transcriptUrl = (event as any).url;
-
-            if (!meetingId || !transcriptUrl) {
-                return NextResponse.json({ error: "Missing meeting ID or transcript URL" }, { status: 400 });
-            }
-
-            await db
-                .update(meetings)
-                .set({
-                    transcriptUrl: transcriptUrl,
-                    status: 'processing'
-                })
-                .where(eq(meetings.id, meetingId));
-
-        } catch (error) {
-            console.error('Error handling call.transcription_ready:', error);
-            return NextResponse.json({ error: "Internal server error" }, { status: 500 });
-        }
-    } else if (eventType === 'call.recording_ready') {
-        try {
-            const event = payload as CallRecordingReadyEvent;
-            // Note: You may need to adjust these property accesses based on the actual event structure
-            const meetingId = (event as any).call_cid?.split(':')[1];
-            const recordingUrl = (event as any).url;
-
-            if (!meetingId || !recordingUrl) {
-                return NextResponse.json({ error: "Missing meeting ID or recording URL" }, { status: 400 });
-            }
-
-            await db
-                .update(meetings)
-                .set({
-                    recordingUrl: recordingUrl
-                })
-                .where(eq(meetings.id, meetingId));
-
-        } catch (error) {
-            console.error('Error handling call.recording_ready:', error);
-            return NextResponse.json({ error: "Internal server error" }, { status: 500 });
-        }
+        const call =  streamVideo.video.call('default', meetingId);
+        await call.end();
     }
     return NextResponse.json({ status: 'ok' });
 
