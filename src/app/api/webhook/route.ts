@@ -14,6 +14,7 @@ import { agents, meetings } from "@/db/schema";
 import  streamVideo  from "@/lib/stream-video";
 import { db } from "@/db";
 import { el } from "date-fns/locale";
+import { inngest } from "@/inngest/client";
 
 
 function verifySignatureWithSDK(body: string, signature: string): boolean {
@@ -153,7 +154,15 @@ export async function POST(req: NextRequest) {
         if(!updatedMeeting){
             return NextResponse.json({ error: "Meeting not found" }, { status: 404 }); 
         }
-        // TODO: call INNGEST FOR BACKFROUND 
+        
+        await inngest.send({
+            name: 'meeting/processing',
+            data:{
+                meetingId: updatedMeeting.id,
+                transcriptUrl: updatedMeeting.transcriptUrl
+            }
+        });
+        
     } else if( eventType === 'call.recording_ready') {
         const event = payload as CallRecordingReadyEvent;
         const meetingId = event.call_cid.split(':')[1];  // call_id is formatted as "call:<meetingId>"
